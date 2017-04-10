@@ -37,3 +37,9 @@ When false an error and code will be provided, the code indicates the error:
 ```json
 {"success": true, "newBalance": 110}
 ```
+
+## Environment
+| Name | Value |
+| --------- | --- |
+| MONGO_URI | {mongo_uri} |
+| DB_NAME | {db name to store data} |
