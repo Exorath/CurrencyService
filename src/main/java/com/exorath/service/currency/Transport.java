@@ -19,6 +19,8 @@ package com.exorath.service.currency;
 import com.exorath.service.commons.portProvider.PortProvider;
 import com.exorath.service.currency.res.GetBalanceReq;
 import com.exorath.service.currency.res.IncrementReq;
+import com.exorath.service.currency.res.MultiIncrementReq;
+import com.exorath.service.currency.res.Success;
 import com.google.gson.Gson;
 import spark.Route;
 
@@ -36,16 +38,34 @@ public class Transport {
         get("/currencies/:currency/players/:uuid", getGetBalanceRoute(service), GSON::toJson);
         put("/currencies/:currency/players/:uuid/inc", getIncrementRoute(service), GSON::toJson);
     }
-    private static Route getGetBalanceRoute(Service service){
+
+    private static Route getGetBalanceRoute(Service service) {
         return (req, res) -> {
             return service.getBalance(new GetBalanceReq(req.params("currency"), req.params("uuid")));
         };
     }
+
     private static Route getIncrementRoute(Service service) {
         return (req, res) -> {
-            Integer amount = Integer.valueOf(req.queryParams("amount"));
-            Integer minimum = req.queryParams("min") != null ? Integer.valueOf(req.queryParams("min")) : null;
-            return service.increment(new IncrementReq(req.params("currency"), req.params("uuid"), amount, minimum));
+            try {
+                Integer amount = Integer.valueOf(req.queryParams("amount"));
+                Integer minimum = req.queryParams("min") != null ? Integer.valueOf(req.queryParams("min")) : null;
+                return service.increment(new IncrementReq(req.params("currency"), req.params("uuid"), amount, minimum));
+            } catch (Exception e) {
+                e.printStackTrace();
+                return new Success(-1, e.getMessage());
+            }
+        };
+    }
+
+    private static Route getMultiIncrementRoute(Service service) {
+        return (req, res) -> {
+            try {
+                return service.multiIncrement(GSON.fromJson(req.body(), MultiIncrementReq.class));
+            } catch (Exception e) {
+                e.printStackTrace();
+                return new Success(-1, e.getMessage());
+            }
         };
     }
 }

@@ -19,10 +19,7 @@ package com.exorath.service.currency.service;
 import com.exorath.service.commons.mongoProvider.MongoProvider;
 import com.exorath.service.commons.tableNameProvider.TableNameProvider;
 import com.exorath.service.currency.Service;
-import com.exorath.service.currency.res.GetBalanceReq;
-import com.exorath.service.currency.res.GetBalanceRes;
-import com.exorath.service.currency.res.IncrementReq;
-import com.exorath.service.currency.res.IncrementSuccess;
+import com.exorath.service.currency.res.*;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.FindOneAndUpdateOptions;
@@ -31,6 +28,9 @@ import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
+
+import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * accounts db doc example: {"currency": "coins", "uuid": "xxx", "balance": 1234}
@@ -72,5 +72,27 @@ public class MongoService implements Service {
         if (first == null || !first.containsKey("balance"))
             return new GetBalanceRes(0);
         return new GetBalanceRes(first.getInteger("balance"));
+    }
+
+    @Override
+    public Success multiIncrement(MultiIncrementReq req) {
+        Collection<IncrementReq> finished = new HashSet<>();
+        for (IncrementReq incrementReq : req.getRequests()) {
+            IncrementSuccess success = increment(incrementReq);
+            if (!success.isSuccess()) {
+                revert(req.getUuid(), finished);
+                return success;
+            }
+            finished.add(incrementReq);
+        }
+        return new Success(true);
+    }
+
+    private void revert(String uuid, Collection<IncrementReq> reqs) {
+        for (IncrementReq req : reqs) {
+            req.setMin(null);
+            req.setAmount(-req.getAmount());
+            increment(req);
+        }
     }
 }

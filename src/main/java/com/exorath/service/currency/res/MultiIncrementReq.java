@@ -14,22 +14,35 @@
  *    limitations under the License.
  */
 
-package com.exorath.service.currency;
+package com.exorath.service.currency.res;
 
-import com.exorath.service.currency.res.*;
+import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * Created by toonsev on 4/1/2017.
  */
-public interface Service {
-    /**
-     * Increments or decrements (negative amount) the balance of a player's currency
-     * @param req the increment req
-     * @return whether or not this was successful
-     */
-    IncrementSuccess increment(IncrementReq req);
+public class MultiIncrementReq {
+    private String uuid;
+    private Collection<IncrementReq> requests = new HashSet<>();
 
-    Success multiIncrement(MultiIncrementReq req);
+    public MultiIncrementReq() {
 
-    GetBalanceRes getBalance(GetBalanceReq req);
+    }
+
+    public MultiIncrementReq(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public void addIncrement(String currency, int amount, Integer min) {
+        requests.add(new IncrementReq(currency, uuid, amount, min));
+    }
+
+    public Collection<IncrementReq> getRequests() {
+        return requests;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
 }

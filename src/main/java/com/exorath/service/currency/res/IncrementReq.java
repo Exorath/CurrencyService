@@ -53,4 +53,12 @@ public class IncrementReq {
     public Integer getMin() {
         return min;
     }
+
+    public void setMin(Integer min) {
+        this.min = min;
+    }
+
+    public void setAmount(int amount) {
+        this.amount = amount;
+    }
 }

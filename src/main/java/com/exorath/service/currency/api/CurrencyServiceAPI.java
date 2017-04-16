@@ -16,10 +16,7 @@
 
 package com.exorath.service.currency.api;
 
-import com.exorath.service.currency.res.GetBalanceReq;
-import com.exorath.service.currency.res.GetBalanceRes;
-import com.exorath.service.currency.res.IncrementReq;
-import com.exorath.service.currency.res.IncrementSuccess;
+import com.exorath.service.currency.res.*;
 import com.google.gson.Gson;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.request.HttpRequest;
@@ -47,7 +44,18 @@ public class CurrencyServiceAPI {
             return GSON.fromJson(httpRequest.asString().getBody(), IncrementSuccess.class);
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            return new IncrementSuccess(-1, e.getMessage());
+        }
+    }
+
+    public Success multiIncrement(MultiIncrementReq req) {
+        try {
+            String body = Unirest.put(url("/currencies/{currency}/players/{uuid}/incMulti"))
+                    .body(GSON.toJson(req)).asString().getBody();
+            return GSON.fromJson(body, IncrementSuccess.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Success(-1, e.getMessage());
         }
     }
 
