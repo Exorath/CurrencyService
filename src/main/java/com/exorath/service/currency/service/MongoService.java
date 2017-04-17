@@ -59,7 +59,7 @@ public class MongoService implements Service {
             if (result == null)
                 return new IncrementSuccess(1, "Insufficient funds");
         } else
-            result = accounts.findOneAndUpdate(filter, Updates.inc("balance", req.getAmount()), new FindOneAndUpdateOptions().upsert(true));
+            result = accounts.findOneAndUpdate(filter, Updates.inc("balance", req.getAmount()), new FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER).upsert(true));
         if (result == null)
             return new IncrementSuccess(-1, "Unknown error");
         return new IncrementSuccess(result.getInteger("balance"));
