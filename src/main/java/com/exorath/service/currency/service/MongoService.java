@@ -32,6 +32,8 @@ import org.bson.Document;
 import java.util.Collection;
 import java.util.HashSet;
 
+import static com.mongodb.client.model.Filters.gte;
+
 /**
  * accounts db doc example: {"currency": "coins", "uuid": "xxx", "balance": 1234}
  * Created by toonsev on 4/1/2017.
@@ -51,7 +53,8 @@ public class MongoService implements Service {
         Document filter = getFilter(req.getCurrency(), req.getUuid());
         Document result;
         if (req.getMin() != null) {
-            filter.append("balance", req.getMin());
+
+            filter.append("balance", new Document("$gte", req.getMin()));
             result = accounts.findOneAndUpdate(filter, Updates.inc("balance", req.getAmount()), new FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER));
             if (result == null)
                 return new IncrementSuccess(1, "Insufficient funds");

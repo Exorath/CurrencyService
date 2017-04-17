@@ -37,6 +37,7 @@ public class Transport {
 
         get("/currencies/:currency/players/:uuid", getGetBalanceRoute(service), GSON::toJson);
         put("/currencies/:currency/players/:uuid/inc", getIncrementRoute(service), GSON::toJson);
+        put("/currencies/:currency/players/:uuid/incMulti", getMultiIncrementRoute(service), GSON::toJson);
     }
 
     private static Route getGetBalanceRoute(Service service) {
