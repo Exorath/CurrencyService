@@ -25,4 +25,8 @@ public class GetBalanceRes {
     public GetBalanceRes(Integer balance) {
         this.balance = balance;
     }
+
+    public Integer getBalance() {
+        return balance;
+    }
 }
